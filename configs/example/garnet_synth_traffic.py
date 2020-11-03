@@ -82,6 +82,12 @@ parser.add_option("--inj-vnet", type="int", default=-1,
                   help="Only inject in this vnet (0, 1 or 2).\
                         0 and 1 are 1-flit, 2 is 5-flit.\
                         Set to -1 to inject randomly in all vnets.")
+parser.add_option("--checkpoint_restore", type="str", default=None, 
+                  help='Specify the checkpoint to be read if necessary. ')
+parser.add_option("--checkpoint_at_end", action="store_true", 
+                  help='Specify this flag to save a checkpoint at the end. ')
+parser.add_option("--checkpoint_dir", type="str", default=None,
+                  help='The output directory for storing checkpoint. ');
 
 #
 # Add the ruby specific and protocol specific options
@@ -148,9 +154,23 @@ root.system.mem_mode = 'timing'
 m5.ticks.setGlobalFrequency('1ps')
 
 # instantiate configuration
-m5.instantiate()
+if options.checkpoint_restore:
+  m5.instantiate(options.checkpoint_restore)
+else:
+  m5.instantiate()
 
 # simulate until program terminates
 exit_event = m5.simulate(options.abs_max_tick)
-
 print('Exiting @ tick', m5.curTick(), 'because', exit_event.getCause())
+print('Avg packet latency: ', 
+      m5.stats.stats_dict['system.ruby.network.average_packet_latency']
+      .vectorResult()[0])
+print('Avg queueing latency: ', 
+      m5.stats.stats_dict['system.ruby.network.average_packet_queueing_latency']
+      .vectorResult()[0])
+print('Avg network latency: ', 
+      m5.stats.stats_dict['system.ruby.network.average_packet_network_latency']
+      .vectorResult()[0])
+# Store a checkpoint
+if options.checkpoint_at_end:
+  m5.checkpoint(os.path.join(options.checkpoint_dir, 'cpt.%d'))

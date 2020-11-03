@@ -59,6 +59,9 @@ Topology::Topology(uint32_t num_nodes, uint32_t num_routers,
 {
     // Total nodes/controllers in network
     assert(m_nodes > 1);
+    shortest_path_table.clear();
+    std::cout << "Topology: nodes = " << m_nodes 
+              << ", switches = " << m_number_of_switches << std::endl;
 
     // analyze both the internal and external links, create data structures.
     // The python created external links are bi-directional,
@@ -179,8 +182,28 @@ Topology::createLinks(Network *net)
     }
 
     // Walk topology and hookup the links
-    Matrix dist = shortest_path(topology_weights, component_latencies,
-                                component_inter_switches);
+    shortest_path_table = shortest_path(topology_weights, component_latencies,
+                                        component_inter_switches);
+    Matrix& dist = shortest_path_table;
+    // Compute the maximum topological distance and actual distance
+    max_topological_distance.resize(m_vnets);
+    max_distance.resize(m_vnets);
+    for (int i = 0; i < m_vnets; i ++ ) {
+      max_topological_distance[i] = 0;
+      max_distance[i] = 0;
+    }
+    for (int vnet = 0; vnet < m_vnets; vnet ++ ) {
+      for (int i = 0; i < m_number_of_switches; i ++ ) {
+        for (int j = 0; j < m_number_of_switches; j ++ ) {
+          max_topological_distance[vnet] = 
+            max(max_topological_distance[vnet], 
+                component_inter_switches[i+2*m_nodes][j+2*m_nodes][vnet]);
+          max_distance[vnet] = 
+            max(max_distance[vnet], 
+                shortest_path_table[vnet][i+2*m_nodes][j+2*m_nodes]);
+        }
+      }
+    }
 
     for (int i = 0; i < topology_weights[0].size(); i++) {
         for (int j = 0; j < topology_weights[0][i].size(); j++) {

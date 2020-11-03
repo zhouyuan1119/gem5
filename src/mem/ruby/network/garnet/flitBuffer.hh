@@ -71,6 +71,8 @@ class flitBuffer
     {
         m_buffer.push_back(flt);
         std::push_heap(m_buffer.begin(), m_buffer.end(), flit::greater);
+        // Does this correctly track the enqueue time of a flit?
+        flt->local_enqueue_time = curTick();
     }
 
     uint32_t functionalWrite(Packet *pkt);

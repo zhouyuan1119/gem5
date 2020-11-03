@@ -485,6 +485,7 @@ GarnetNetwork::regStats()
 
 
     // Hops
+    m_total_hops.name(name() + ".total_hops");
     m_avg_hops.name(name() + ".average_hops");
     m_avg_hops = m_total_hops / sum(m_flits_received);
 

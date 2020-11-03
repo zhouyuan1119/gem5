@@ -51,6 +51,7 @@ class flit
     int get_size() { return m_size; }
     Tick get_enqueue_time() { return m_enqueue_time; }
     Tick get_dequeue_time() { return m_dequeue_time; }
+    Tick get_local_enqueue_time() { return local_enqueue_time; }
     int get_id() { return m_id; }
     Tick get_time() { return m_time; }
     int get_vnet() { return m_vnet; }
@@ -104,6 +105,8 @@ class flit
 
     uint32_t m_width;
     int msgSize;
+    // A new variable to track local age
+    Tick local_enqueue_time;
   protected:
     int m_id;
     int m_vnet;

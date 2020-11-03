@@ -39,6 +39,7 @@
 #include "mem/ruby/network/fault_model/FaultModel.hh"
 #include "mem/ruby/network/garnet/CommonTypes.hh"
 #include "params/GarnetNetwork.hh"
+#include "mem/ruby/network/Topology.hh"
 
 class FaultModel;
 class NetworkInterface;
@@ -83,6 +84,7 @@ class GarnetNetwork : public Network
     }
     int getNumRouters();
     int get_router_id(int ni, int vnet);
+    Topology* get_topology() const { return m_topology_ptr; }
 
 
     // Methods used by Topology to setup the network
@@ -100,6 +102,7 @@ class GarnetNetwork : public Network
     uint32_t functionalWrite(Packet *pkt);
 
     // Stats
+    Stats::Formula m_avg_packet_latency;
     void collateStats();
     void regStats();
     void resetStats();
@@ -163,7 +166,6 @@ class GarnetNetwork : public Network
     Stats::Formula m_avg_packet_vqueue_latency;
     Stats::Formula m_avg_packet_network_latency;
     Stats::Formula m_avg_packet_queueing_latency;
-    Stats::Formula m_avg_packet_latency;
 
     Stats::Vector m_flits_received;
     Stats::Vector m_flits_injected;

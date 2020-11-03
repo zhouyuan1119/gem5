@@ -137,6 +137,8 @@ pybind_init_stats(py::module &m_native)
         .def("reset", &Stats::Info::reset)
         .def("zero", &Stats::Info::zero)
         .def("visit", &Stats::Info::visit)
+        .def("scalarResult", &Stats::Info::scalarResult)
+        .def("vectorResult", &Stats::Info::vectorResult)
         ;
 
     py::class_<Stats::ScalarInfo, Stats::Info,
@@ -145,6 +147,17 @@ pybind_init_stats(py::module &m_native)
         .def("value", &Stats::ScalarInfo::value)
         .def("result", &Stats::ScalarInfo::result)
         .def("total", &Stats::ScalarInfo::total)
+        .def("scalarResult", &Stats::ScalarInfo::scalarResult)
+        ;
+
+    py::class_<Stats::VectorInfo, Stats::Info,
+               std::unique_ptr<Stats::VectorInfo, py::nodelete>>(
+                   m, "VectorInfo")
+        .def("value", &Stats::VectorInfo::value)
+        .def("result", &Stats::VectorInfo::result)
+        .def("total", &Stats::VectorInfo::total)
+        .def("size", &Stats::VectorInfo::size)
+        .def("vectorResult", &Stats::VectorInfo::vectorResult)
         ;
 
     py::class_<Stats::Group, std::unique_ptr<Stats::Group, py::nodelete>>(

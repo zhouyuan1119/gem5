@@ -82,7 +82,11 @@ class Topology
     void createLinks(Network *net);
     void print(std::ostream& out) const { out << "[Topology]"; }
 
-  private:
+    // We store the computed shortest-path table
+    Matrix shortest_path_table;
+    std::vector<int> max_topological_distance;
+    std::vector<int> max_distance;
+
     void addLink(SwitchID src, SwitchID dest, BasicLink* link,
                  PortDirection src_outport_dirn = "",
                  PortDirection dest_inport_dirn = "");

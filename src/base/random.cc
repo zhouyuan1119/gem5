@@ -45,10 +45,16 @@
 #include "base/logging.hh"
 #include "sim/serialize.hh"
 
+// We don't want to train on the same thing over and over again...
+#include <ctime>
+
 Random::Random()
 {
     // default random seed
-    init(5489);
+    // init(5489);
+
+    // Use a different seed on each run instead
+    init(time(NULL));
 }
 
 Random::Random(uint32_t s)

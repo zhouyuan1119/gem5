@@ -134,6 +134,15 @@ class Info
      */
     virtual void visit(Output &visitor) = 0;
 
+    virtual Result scalarResult() const {
+      return 0.0;
+    }
+
+    virtual const VResult vectorResult() const {
+      VResult res(10, 10);
+      return res;
+    }
+
     /**
      * Checks if the first stat's name is alphabetically less than the second.
      * This function breaks names up at periods and considers each subname
@@ -151,6 +160,9 @@ class ScalarInfo : public Info
     virtual Counter value() const = 0;
     virtual Result result() const = 0;
     virtual Result total() const = 0;
+    virtual Result scalarResult() const {
+      return this->result();
+    }
 };
 
 class VectorInfo : public Info
@@ -168,6 +180,9 @@ class VectorInfo : public Info
     virtual const VCounter &value() const = 0;
     virtual const VResult &result() const = 0;
     virtual Result total() const = 0;
+    virtual const VResult vectorResult() const {
+      return this->result();
+    }
 };
 
 enum DistType { Deviation, Dist, Hist };
