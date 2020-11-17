@@ -45,11 +45,12 @@ typedef enum {
   RL,
   GLOBAL_AGE,
   LOGIC,
-  LOCAL_AGE
+  LOCAL_AGE,
+  TREE
 } ArbitrationAlg;
 const int invalid_choice = -1;
 const float global_age_norm_factor = 500.0f;
-const float payload_size_norm_factor = 5.0f;
+const float payload_size_norm_factor = 72.0f;
 const float local_age_norm_factor = 32.0f;
 
 class Router;
@@ -86,7 +87,12 @@ class SwitchAllocator : public Consumer
       const std::vector<int>& tmp_payload,
       const std::vector<int>& tmp_hop_count,
       const std::vector<int>& tmp_distance);
-    std::vector<float> ml_predict(
+    std::vector<float> rl_predict(
+      const std::vector<int>& tmp_local_age, 
+      const std::vector<int>& tmp_payload,
+      const std::vector<int>& tmp_hop_count,
+      const std::vector<int>& tmp_distance);
+    std::vector<float> tree_predict(
       const std::vector<int>& tmp_local_age, 
       const std::vector<int>& tmp_payload,
       const std::vector<int>& tmp_hop_count,

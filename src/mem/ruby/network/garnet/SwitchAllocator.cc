@@ -64,7 +64,8 @@ SwitchAllocator::SwitchAllocator(Router *router)
 
     // Change this when we want to run customized arbitration algorithms
     // alg = ROUND_ROBIN;
-    alg = RL;
+    alg = TREE;
+    // alg = RL;
 
     // Give initial values for the RL-related variables
     rand_ratio = 0.0f;
@@ -169,10 +170,16 @@ void SwitchAllocator::load_weights() {
         infile.read((char*)&buf, sizeof(float));
         wgts[layer].push_back(buf);
       }
-      for (int i = 0; i < layer_sizes[layer+1]; i ++ ) {
-        float buf;
-        infile.read((char*)&buf, sizeof(float));
-        biases[layer].push_back(buf);
+      if (load_bias) {
+        for (int i = 0; i < layer_sizes[layer+1]; i ++ ) {
+          float buf;
+          infile.read((char*)&buf, sizeof(float));
+          biases[layer].push_back(buf);
+        }
+      } else {
+        for (int i = 0; i < layer_sizes[layer+1]; i ++ ) {
+          biases[layer].push_back(0.0f);
+        }
       }
     }
     infile.close();
@@ -509,7 +516,7 @@ void SwitchAllocator::unified_arbitrate() {
       std::vector<float> scores;
       if (alg == RL) {
         // Use our model to predict
-        scores = ml_predict(
+        scores = rl_predict(
             tmp_local_age, tmp_payload_size, tmp_hop_count, tmp_distance);
       } else if (alg == GLOBAL_AGE) {
         scores = global_age_predict(tmp_global_age);
@@ -517,6 +524,9 @@ void SwitchAllocator::unified_arbitrate() {
         scores = logic_predict(tmp_local_age, tmp_hop_count);
       } else if (alg == LOCAL_AGE) {
         scores = local_age_predict(tmp_local_age);
+      } else if (alg == TREE) {
+        scores = tree_predict(
+          tmp_local_age, tmp_payload_size, tmp_hop_count, tmp_distance);
       }
       // Choose the best legal result
       winner = choose_best_result(scores, useful_for_this_port);
@@ -766,7 +776,8 @@ void SwitchAllocator::populate_features(
             tmp_local_age[idx] = std::min(32UL, 
                 (curTick() - t_flit->get_local_enqueue_time()) / clk_period);
             // Payload size
-            tmp_payload_size[idx] = std::min(5, t_flit->msgSize);
+            // notice that the two types of sizes are 8 and 72... 
+            tmp_payload_size[idx] = std::min(72, t_flit->msgSize);
             // Get the rest of the information from the route
             RouteInfo route = t_flit->get_route();
 
