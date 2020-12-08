@@ -103,6 +103,9 @@ class GarnetNetwork : public Network
 
     // Stats
     Stats::Formula m_avg_packet_latency;
+    Stats::Vector m_packets_received;
+    Stats::Vector m_packet_network_latency;
+    Stats::Vector m_packet_queueing_latency;
     void collateStats();
     void regStats();
     void resetStats();
@@ -157,10 +160,7 @@ class GarnetNetwork : public Network
     bool m_enable_fault_model;
 
     // Statistical variables
-    Stats::Vector m_packets_received;
     Stats::Vector m_packets_injected;
-    Stats::Vector m_packet_network_latency;
-    Stats::Vector m_packet_queueing_latency;
 
     Stats::Formula m_avg_packet_vnet_latency;
     Stats::Formula m_avg_packet_vqueue_latency;

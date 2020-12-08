@@ -63,9 +63,9 @@ SwitchAllocator::SwitchAllocator(Router *router)
     m_output_arbiter_activity = 0;
 
     // Change this when we want to run customized arbitration algorithms
-    // alg = ROUND_ROBIN;
-    alg = TREE;
-    // alg = RL;
+    // alg = LOGIC;
+    // alg = TREE;
+    alg = RL;
 
     // Give initial values for the RL-related variables
     rand_ratio = 0.0f;
@@ -218,6 +218,13 @@ void SwitchAllocator::dump_data() {
     outfile.close();
     // Clear everything in the simulation data array
     simulation_data.clear();
+    // Must clear the counters to show a better training curve
+    /*GarnetNetwork* network_ptr = m_router->get_net_ptr();
+    for (int vnet = 0; vnet < 3; vnet ++ ) {
+      network_ptr->m_packets_received[vnet] = 0;
+      network_ptr->m_packet_network_latency[vnet] = 0;
+      network_ptr->m_packet_queueing_latency[vnet] = 0;
+    }*/
   } else {
     assert(false && "The data pipe cannot be opened properly!");
   }
@@ -773,7 +780,7 @@ void SwitchAllocator::populate_features(
 #endif
             // Local age
             Tick clk_period = m_router->clockPeriod();
-            tmp_local_age[idx] = std::min(32UL, 
+            tmp_local_age[idx] = std::min(31UL, 
                 (curTick() - t_flit->get_local_enqueue_time()) / clk_period);
             // Payload size
             // notice that the two types of sizes are 8 and 72... 

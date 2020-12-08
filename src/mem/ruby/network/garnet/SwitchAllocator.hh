@@ -51,7 +51,7 @@ typedef enum {
 const int invalid_choice = -1;
 const float global_age_norm_factor = 500.0f;
 const float payload_size_norm_factor = 72.0f;
-const float local_age_norm_factor = 32.0f;
+const float local_age_norm_factor = 31.0f;
 
 class Router;
 class InputUnit;
